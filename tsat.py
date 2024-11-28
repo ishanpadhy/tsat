@@ -1,30 +1,61 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def fill_missing_values(series):
+# Existing functions remain here...
+
+def smooth_data(series, window=3):
     """
-    Fills missing values in a time series using linear interpolation.
+    Smooths time series data using a simple moving average.
 
     Parameters:
-        series (pd.Series): Time series data with potential missing values.
+        series (pd.Series): Time series data.
+        window (int): The size of the moving average window.
 
     Returns:
-        pd.Series: Time series with missing values filled.
+        pd.Series: Smoothed time series data.
     """
-    return series.interpolate(method="linear")
+    return series.rolling(window=window).mean()
 
-def plot_trends(series, window=3):
+def detect_outliers(series):
     """
-    Plots the time series data along with a rolling mean for trend analysis.
+    Identifies potential outliers using the IQR method.
 
     Parameters:
-        series (pd.Series): Time series data to plot.
-        window (int): Window size for calculating the rolling mean.
+        series (pd.Series): Time series data.
+
+    Returns:
+        list: Indices of detected outliers.
     """
-    rolling_mean = series.rolling(window=window).mean()
-    plt.figure(figsize=(10, 6))
-    plt.plot(series, label="Original Data", marker="o")
-    plt.plot(rolling_mean, label=f"{window}-Point Rolling Mean", color="orange")
-    plt.title("Time Series Trends")
-    plt.legend()
-    plt.show()
+    q1 = series.quantile(0.25)
+    q3 = series.quantile(0.75)
+    iqr = q3 - q1
+    lower_bound = q1 - 1.5 * iqr
+    upper_bound = q3 + 1.5 * iqr
+    outliers = series[(series < lower_bound) | (series > upper_bound)]
+    return outliers.index.tolist()
+
+def resample_data(series, frequency):
+    """
+    Resamples time series data to a specified frequency.
+
+    Parameters:
+        series (pd.Series): Time series data.
+        frequency (str): Resampling frequency (e.g., 'D', 'W', 'M').
+
+    Returns:
+        pd.Series: Resampled time series data.
+    """
+    return series.resample(frequency).mean()
+
+def detrend_data(series):
+    """
+    Detrends time series data by subtracting the rolling mean.
+
+    Parameters:
+        series (pd.Series): Time series data.
+
+    Returns:
+        pd.Series: Detrended time series data.
+    """
+    rolling_mean = series.rolling(window=12, min_periods=1).mean()
+    return series - rolling_mean
