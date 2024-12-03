@@ -1,61 +1,53 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 
-# Existing functions remain here...
+# Function to smooth the data
+def smooth_data(series):
+    # Calculate the Q1, Q3, and IQR
+    Q1 = series.quantile(0.25)
+    Q3 = series.quantile(0.75)
+    IQR = Q3 - Q1
+    
+    # Define lower and upper bounds for outliers
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    
+    # Clip the data to within bounds to remove outliers
+    smoothed = series.clip(lower=lower_bound, upper=upper_bound)
+    
+    # Print for debugging
+    print(f"Q1: {Q1}, Q3: {Q3}, IQR: {IQR}")
+    print(f"Lower Bound: {lower_bound}, Upper Bound: {upper_bound}")
+    print(f"Smoothed Data: {smoothed}")
+    
+    return smoothed
 
-def smooth_data(series, window=3):
-    """
-    Smooths time series data using a simple moving average.
-
-    Parameters:
-        series (pd.Series): Time series data.
-        window (int): The size of the moving average window.
-
-    Returns:
-        pd.Series: Smoothed time series data.
-    """
-    return series.rolling(window=window).mean()
-
+# Function to detect outliers
 def detect_outliers(series):
-    """
-    Identifies potential outliers using the IQR method.
-
-    Parameters:
-        series (pd.Series): Time series data.
-
-    Returns:
-        list: Indices of detected outliers.
-    """
-    q1 = series.quantile(0.25)
-    q3 = series.quantile(0.75)
-    iqr = q3 - q1
-    lower_bound = q1 - 1.5 * iqr
-    upper_bound = q3 + 1.5 * iqr
+    # Calculate the Q1, Q3, and IQR
+    Q1 = series.quantile(0.25)
+    Q3 = series.quantile(0.75)
+    IQR = Q3 - Q1
+    
+    # Define lower and upper bounds for outliers
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    
+    # Find the outliers based on the bounds
     outliers = series[(series < lower_bound) | (series > upper_bound)]
-    return outliers.index.tolist()
+    
+    # Print for debugging
+    print(f"Q1: {Q1}, Q3: {Q3}, IQR: {IQR}")
+    print(f"Lower Bound: {lower_bound}, Upper Bound: {upper_bound}")
+    print(f"Detected Outliers: {outliers}")
+    
+    return outliers
 
-def resample_data(series, frequency):
-    """
-    Resamples time series data to a specified frequency.
-
-    Parameters:
-        series (pd.Series): Time series data.
-        frequency (str): Resampling frequency (e.g., 'D', 'W', 'M').
-
-    Returns:
-        pd.Series: Resampled time series data.
-    """
-    return series.resample(frequency).mean()
-
-def detrend_data(series):
-    """
-    Detrends time series data by subtracting the rolling mean.
-
-    Parameters:
-        series (pd.Series): Time series data.
-
-    Returns:
-        pd.Series: Detrended time series data.
-    """
-    rolling_mean = series.rolling(window=12, min_periods=1).mean()
-    return series - rolling_mean
+# Function to resample data with a given frequency
+def resample_data(series, freq='W-SUN'):
+    # Resample and aggregate the data, here using mean for aggregation
+    resampled = series.resample(freq).mean()  # Can also use .sum() depending on your requirement
+    
+    # Print for debugging
+    print(f"Resampled Data: {resampled}")
+    
+    return resampled
