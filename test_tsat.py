@@ -1,5 +1,5 @@
 import pandas as pd
-from tsat import smooth_data, detect_outliers, resample_data
+from tsat import smooth_data, detect_outliers, resample_data, plot_time_series_analysis, rolling_window_stats
 
 # Test the smooth_data function
 def test_smooth_data():
@@ -53,11 +53,49 @@ def test_resample_data():
     
     print("resample_data passed.")
 
+# Test the plot_time_series_analysis function
+def test_plot_time_series_analysis():
+    # Create a sample time series
+    series = pd.Series(
+        [1, 2, 3, 100, 50, 60, 5, 10, 15],
+        index=pd.date_range("2023-01-01", periods=9, freq="D"),
+    )
+    
+    # Generate the plots
+    plot_time_series_analysis(series)
+    
+    print("plot_time_series_analysis executed successfully.")
+
+
+# Test the rolling_window_stats function
+def test_rolling_window_stats():
+    # Create a sample time series
+    series = pd.Series(
+        [10, 20, 30, 40, 50, 60, 70],
+        index=pd.date_range("2023-01-01", periods=7, freq="D"),
+    )
+    
+    # Calculate rolling statistics
+    results = rolling_window_stats(series, window=3)
+    
+    # Assert the statistics are calculated correctly (using sample checks)
+    assert results["mean"].iloc[2] == 20, f"Expected mean: 20, but got {results['mean'].iloc[2]}"
+    assert results["std"].iloc[3] == 10.0, f"Expected std: 10.0, but got {results['std'].iloc[3]}"  # Updated to 10.0
+    assert results["median"].iloc[4] == 40, f"Expected median: 40, but got {results['median'].iloc[4]}"
+    
+    print("rolling_window_stats passed.")
+
+
+
 # Run all tests
 def run_tests():
     test_smooth_data()
     test_detect_outliers()
     test_resample_data()
+    test_plot_time_series_analysis()
+    test_rolling_window_stats()
+
 
 # Execute the tests
 run_tests()
+
