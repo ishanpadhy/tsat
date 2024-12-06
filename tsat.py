@@ -4,18 +4,18 @@ import matplotlib.pyplot as plt
 # Function to smooth the data
 def smooth_data(series):
     # Calculate the Q1, Q3, and IQR
-    Q1 = series.quantile(0.25)
-    Q3 = series.quantile(0.75)
-    IQR = Q3 - Q1
+    Q1 = series.quantile(0.25)                      # First Quartile
+    Q3 = series.quantile(0.75)                      # Third Quartile
+    IQR = Q3 - Q1                                   # Inter Quartile Range = It is the range between 1st quartile and 3rd quartile
     
-    # Define lower and upper bounds for outliers
-    lower_bound = Q1 - 1.5 * IQR
+    # Defining the lower and upper bounds for outliers detection
+    lower_bound = Q1 - 1.5 * IQR                    
     upper_bound = Q3 + 1.5 * IQR
     
-    # Clip the data to within bounds to remove outliers
-    smoothed = series.clip(lower=lower_bound, upper=upper_bound)
+    # Clip the data to within the upper and lower bounds to remove outliers
+    smoothed = series.clip(lower=lower_bound, upper=upper_bound)            
     
-    # Print for debugging
+    # Printing the results
     print(f"Q1: {Q1}, Q3: {Q3}, IQR: {IQR}")
     print(f"Lower Bound: {lower_bound}, Upper Bound: {upper_bound}")
     print(f"Smoothed Data: {smoothed}")
@@ -25,18 +25,18 @@ def smooth_data(series):
 # Function to detect outliers
 def detect_outliers(series):
     # Calculate the Q1, Q3, and IQR
-    Q1 = series.quantile(0.25)
-    Q3 = series.quantile(0.75)
-    IQR = Q3 - Q1
+    Q1 = series.quantile(0.25)                  # First Quartile
+    Q3 = series.quantile(0.75)                  # Third Quartile
+    IQR = Q3 - Q1                               # Inter Quartile Range = It is the range between 1st quartile and 3rd quartile
     
     # Define lower and upper bounds for outliers
     lower_bound = Q1 - 1.5 * IQR
     upper_bound = Q3 + 1.5 * IQR
     
-    # Find the outliers based on the bounds
+    # Find the outliers based on the bounds. If anything is below the lower bound or above the upper bound, then such elements are considered as outliers 
     outliers = series[(series < lower_bound) | (series > upper_bound)]
     
-    # Print for debugging
+    # Printing the results
     print(f"Q1: {Q1}, Q3: {Q3}, IQR: {IQR}")
     print(f"Lower Bound: {lower_bound}, Upper Bound: {upper_bound}")
     print(f"Detected Outliers: {outliers}")
@@ -46,9 +46,9 @@ def detect_outliers(series):
 # Function to resample data with a given frequency
 def resample_data(series, freq='W-SUN'):
     # Resample and aggregate the data, here using mean for aggregation
-    resampled = series.resample(freq).mean()  # Can also use .sum() depending on your requirement
+    resampled = series.resample(freq).mean()  
     
-    # Print for debugging
+    # Printing the resampled data
     print(f"Resampled Data: {resampled}")
     
     return resampled
@@ -80,15 +80,15 @@ def rolling_window_stats(series, window=3, stats=["mean", "std", "median"]):
     results = {}
     
     if "mean" in stats:
-        results["mean"] = series.rolling(window=window).mean()
+        results["mean"] = series.rolling(window=window).mean()              # calculating the rolling mean from the series for a specified window
     
     if "std" in stats:
-        results["std"] = series.rolling(window=window).std()
+        results["std"] = series.rolling(window=window).std()                # calculating the rolling standard deviation from the series for a specified window
     
     if "median" in stats:
-        results["median"] = series.rolling(window=window).median()
+        results["median"] = series.rolling(window=window).median()          # calculating the rolling median from the series for a specified window
     
-    # Print results for debugging
+    # Printing the results 
     for stat, result in results.items():
         print(f"{stat.capitalize()}:\n{result}\n")
     
