@@ -1,17 +1,24 @@
-Time Series Analysis Toolkit (TSAT)
+# TSAT - Time Series Analysis Toolkit
 
-To Be Completed !
+## Overview
+TSAT is a simple toolkit for analyzing and visualizing time series data. It provides features like data smoothing, outlier detection, resampling, rolling statistics, and plotting.
 
-Example Useage
+## Features
+- Smooth time series data by removing outliers.
+- Detect outliers using the IQR method.
+- Resample time series data with custom frequencies.
+- Compute rolling statistics (mean, standard deviation, median).
+- Visualize time series data.
 
-import pandas as pd
-from tsat import fill_missing_values, plot_trends
+## Requirements
+- Python 3.7+ 
+- Libraries: pandas, matplotlib, numpy
 
-# Example time series data
-data = pd.Series([1, None, 3, None, 5], index=pd.date_range("2023-01-01", periods=5))
+## Note
+The files need to be in the same directory for the project to be executed. Any example project the user wishes to work on, must include the tsat.py file in the same directory
 
-# Fill missing values
-filled_data = fill_missing_values(data)
-
-# Plot trends
-plot_trends(filled_data)
+## Files
+- tsat.py: Main script with the TimeSeriesAnalyzer class.
+- test_tsat.py: Test script for validating the methods in tsat.py.
+- Example.py : contains a small example file of how the function can be used.
+- README.md: Project documentation.
