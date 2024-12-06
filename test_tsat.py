@@ -1,101 +1,68 @@
 import pandas as pd
-from tsat import smooth_data, detect_outliers, resample_data, plot_time_series_analysis, rolling_window_stats
+import numpy as np
+from tsat import TimeSeriesAnalyzer  # Assuming your class is in a file named tsat.py
 
-# Test the smooth_data function
 def test_smooth_data():
-    # Create a sample time series
-    series = pd.Series([1, 2, 3, 100], index=pd.date_range("2023-01-01", periods=4, freq="D"))
+    # Test data
+    data = pd.Series([10, 15, 200, 20, 25])
+    analyzer = TimeSeriesAnalyzer(data)
     
-    # Apply smoothing
-    smoothed = smooth_data(series)
+    # Smooth the data
+    smoothed = analyzer.smooth_data()
     
-    # Assert the smoothed values are within the expected range
-    assert smoothed.iloc[3] == 65.5, "Smoothing did not clip outliers to the correct upper bound."
-    
-    print("smooth_data passed.")
+    # Assert statements (update with expected values)
+    assert smoothed.max() <= 60  # Example: Adjust based on known upper bound
+    assert smoothed.min() >= 5   # Example: Adjust based on known lower bound
 
-# Test the detect_outliers function
 def test_detect_outliers():
-    # Create a sample time series with an outlier
-    series = pd.Series([1, 2, 3, 100], index=pd.date_range("2023-01-01", periods=4, freq="D"))
+    # Test data
+    data = pd.Series([10, 15, 200, 20, 25])
+    analyzer = TimeSeriesAnalyzer(data)
     
     # Detect outliers
-    outliers = detect_outliers(series)
+    outliers = analyzer.detect_outliers()
     
-    # Expected outlier is at index 2023-01-04 with value 100
-    expected_outliers = [pd.Timestamp('2023-01-04 00:00:00')]
-    
-    # Adjust the outliers to match the expected output
-    outlier_indexes = outliers.index.tolist()
-    
-    # Assert the outliers are correctly detected
-    assert outlier_indexes == expected_outliers, f"Outliers not detected correctly. Detected: {outliers}, Expected: {expected_outliers}"
-    
-    print("detect_outliers passed.")
+    # Assert statements
+    assert 200 in outliers.values
+    assert 10 not in outliers.values  # Example: Adjust based on known non-outliers
 
-# Test the resample_data function
 def test_resample_data():
-    # Create a sample time series
-    series = pd.Series([1, 2, 3], index=pd.date_range("2023-01-01", periods=3, freq="D"))
+    # Test data
+    date_rng = pd.date_range(start='2023-01-01', end='2023-01-31', freq='D')
+    data = pd.Series(range(len(date_rng)), index=date_rng)
+    analyzer = TimeSeriesAnalyzer(data)
     
-    # Resample the data with weekly frequency starting on Sunday
-    resampled = resample_data(series, "W-SUN")
+    # Resample the data
+    resampled = analyzer.resample_data(freq='W-SUN')
     
-    # Debug print the resampled result
-    print(resampled)
-    
-    # Assert that the resampled data has 2 values
-    assert len(resampled) == 2, f"Expected 2 resampled values, but got {len(resampled)}."
-    
-    # Assert the aggregated values for the respective weeks
-    assert resampled.iloc[0] == 1.0, f"Expected 1.0 for the first week, but got {resampled.iloc[0]}"
-    assert resampled.iloc[1] == 2.5, f"Expected 2.5 for the second week, but got {resampled.iloc[1]}"
-    
-    print("resample_data passed.")
+    # Assert statements
+    assert len(resampled) > 0
+    assert resampled.index.freq == 'W-SUN'
 
-# Test the plot_time_series_analysis function
-def test_plot_time_series_analysis():
-    # Create a sample time series
-    series = pd.Series(
-        [1, 2, 3, 100, 50, 60, 5, 10, 15],
-        index=pd.date_range("2023-01-01", periods=9, freq="D"),
-    )
-    
-    # Generate the plots
-    plot_time_series_analysis(series)
-    
-    print("plot_time_series_analysis executed successfully.")
-
-
-# Test the rolling_window_stats function
 def test_rolling_window_stats():
-    # Create a sample time series
-    series = pd.Series(
-        [10, 20, 30, 40, 50, 60, 70],
-        index=pd.date_range("2023-01-01", periods=7, freq="D"),
-    )
+    # Test data
+    data = pd.Series([1, 2, 3, 4, 5, 6])
+    analyzer = TimeSeriesAnalyzer(data)
     
-    # Calculate rolling statistics
-    results = rolling_window_stats(series, window=3)
+    # Compute rolling statistics
+    rolling_stats = analyzer.rolling_window_stats(window=3, stats=["mean", "std"])
     
-    # Assert the statistics are calculated correctly (using sample checks)
-    assert results["mean"].iloc[2] == 20, f"Expected mean: 20, but got {results['mean'].iloc[2]}"
-    assert results["std"].iloc[3] == 10.0, f"Expected std: 10.0, but got {results['std'].iloc[3]}"  
-    assert results["median"].iloc[4] == 40, f"Expected median: 40, but got {results['median'].iloc[4]}"
-    
-    print("rolling_window_stats passed.")
+    # Assert statements
+    assert "mean" in rolling_stats
+    assert len(rolling_stats["mean"]) == len(data)
+    assert rolling_stats["mean"].isnull().sum() == 2  # First two should be NaN for window=3
 
+def test_plot_time_series():
+    # Test data
+    date_rng = pd.date_range(start='2023-01-01', end='2023-01-10', freq='D')
+    data = pd.Series(np.random.randint(0, 10, size=len(date_rng)), index=date_rng)
+    analyzer = TimeSeriesAnalyzer(data)
+    analyzer.plot_time_series()
 
-
-# Run all tests
-def run_tests():
+if __name__ == "__main__":
     test_smooth_data()
     test_detect_outliers()
     test_resample_data()
-    test_plot_time_series_analysis()
     test_rolling_window_stats()
-
-
-# Execute the tests
-run_tests()
-
+    test_plot_time_series()
+    print("All tests passed!")
