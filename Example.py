@@ -10,7 +10,7 @@ analyzer = TimeSeriesAnalyzer(data)
 # Smooth the data
 smoothed_data = analyzer.smooth_data()
 
-print(smoothed_data)
+# print(smoothed_data)
 
 # Plot the data
 analyzer.plot_time_series()
