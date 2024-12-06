@@ -80,7 +80,7 @@ def test_rolling_window_stats():
     
     # Assert the statistics are calculated correctly (using sample checks)
     assert results["mean"].iloc[2] == 20, f"Expected mean: 20, but got {results['mean'].iloc[2]}"
-    assert results["std"].iloc[3] == 10.0, f"Expected std: 10.0, but got {results['std'].iloc[3]}"  # Updated to 10.0
+    assert results["std"].iloc[3] == 10.0, f"Expected std: 10.0, but got {results['std'].iloc[3]}"  
     assert results["median"].iloc[4] == 40, f"Expected median: 40, but got {results['median'].iloc[4]}"
     
     print("rolling_window_stats passed.")
